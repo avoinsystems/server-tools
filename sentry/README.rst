@@ -81,6 +81,18 @@ configuration file:
                                and will only be used to extract the Odoo Git commit, which will be
                                sent to Sentry, to allow to distinguish between Odoo updates.
                                Overridden by *sentry_release*
+
+``sentry_tags``                Comma-separated list of tag:value pairs to be sent to Sentry. If you
+                               for example wanted to tag an instance of Odoo based on it being an
+                               Enterprise installation and that it was running on server number 12,
+                               you might run with the option
+                               *--sentry_tags=type:enterprise,servernum=12*. If the option
+                               *sentry_include_versions* is given, the Odoo major and minor
+                               versions are added to the tags as eg.
+                               *odoo_major_version:11.0,odoo_version:11.0-20171130*.
+                               Note that tags are only informative in Sentry and do not usually
+                               enable any special functionality. Their main use is in categorizing
+                               errors.
 =============================  ====================================================================  ==========================================================
 
 Other `client arguments
@@ -108,6 +120,7 @@ Below is an example of Odoo configuration file with *Odoo Sentry* options::
     sentry_auto_log_stacks = false
     sentry_odoo_dir = /home/odoo/odoo/
     sentry_release = 1.3.2
+    sentry_tags = type:community,has_website:no
 
 Usage
 =====

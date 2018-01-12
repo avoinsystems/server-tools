@@ -67,6 +67,18 @@ def select_transport(name=DEFAULT_TRANSPORT):
         'threaded': raven.transport.ThreadedHTTPTransport,
     }.get(name, DEFAULT_TRANSPORT)
 
+def parse_tags(tags_string):
+    tags = dict()
+    for tag_value in split_multiple(tags_string):
+        try:
+            tag, value = tag_value.split(':')
+        except ValueError:
+            _logger.warning(
+                "Ignoring incorrect tag option: {}. Should be of the form tag:value".format(
+                    str(tag_value)))
+        else:
+            tags[tag] = value
+    return tags
 
 def get_sentry_options():
     return [
@@ -87,4 +99,5 @@ def get_sentry_options():
         SentryOption('processors', DEFAULT_PROCESSORS, split_multiple),
         SentryOption('environment', None, None),
         SentryOption('release', None, None),
+        SentryOption('tags', None, parse_tags),
     ]

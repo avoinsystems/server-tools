@@ -6,6 +6,7 @@ import logging
 
 from odoo.service import wsgi_server
 from odoo.tools import config as odoo_config
+from odoo import release as odoo_release
 
 from . import const
 from .logutils import LoggerNameFilter, OdooSentryHandler
@@ -54,6 +55,15 @@ def initialize_raven(config, client_cls=None):
         if isinstance(option.converter, collections.Callable):
             value = option.converter(value)
         options[option.key] = value
+
+    if config.get('sentry_include_versions'):
+        new_tags = dict(
+            odoo_major_version=odoo_release.major_version,
+            odoo_version=odoo_release.version
+        )
+        if isinstance(options.get('tags'), dict):
+            new_tags.update(options['tags'])
+        options['tags'] = new_tags
 
     level = config.get('sentry_logging_level', const.DEFAULT_LOG_LEVEL)
     exclude_loggers = const.split_multiple(

@@ -123,3 +123,49 @@ class TestClientSetup(unittest.TestCase):
             __name__, level, __file__, 42, msg, (), exc_info)
         handler.emit(record)
         self.assertEventNotCaptured(client, level, msg)
+
+    def assertTagsEqual(self, client, wanted):
+        tags = client.tags.copy()
+        for key, value in wanted.items():
+            self.assertIn(key, client.tags)
+            self.assertEqual((key, tags[key]), (key, value))
+            tags.pop(key)
+        if tags:
+            self.fail("The client tags included unexpected entries:\n{}".format(tags))
+    def test_set_tags(self):
+        config = {
+            'sentry_enabled': True,
+            'sentry_tags': 'foo:bar'
+        }
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertTagsEqual(client, dict(
+            foo='bar'
+        ))
+        config['sentry_tags'] = 'foo:bar,fee:bar'
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertTagsEqual(client, dict(
+            foo='bar',
+            fee='bar'
+        ))
+        config.pop('sentry_tags', None)
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertTagsEqual(client, dict())
+        config['sentry_tags'] = 'foo'
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertTagsEqual(client, dict())
+        config['sentry_tags'] = None
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertTagsEqual(client, dict())
+        config['sentry_tags'] = 'number:34'
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertTagsEqual(client, dict(number='34'))
+        config['sentry_tags'] = '12:34'
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertTagsEqual(client, {'12': '34'})
+
+        config['sentry_tags'] = '12:34'
+        config['sentry_include_versions'] = True
+        client = initialize_raven(config, client_cls=InMemoryClient)
+        self.assertIn('odoo_version', client.tags)
+        self.assertIn('odoo_major_version', client.tags)
+        self.assertIn('12', client.tags)
