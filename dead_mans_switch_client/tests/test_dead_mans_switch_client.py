@@ -28,7 +28,8 @@ class TestDeadMansSwitchClient(TransactionCase):
         # example, but I don't want to add a module dependency only because
         # of a single unit test.
 
-        # We should find Roger Scott from the demo data
+        self.assertTrue(self.env['res.partner'].search([('name', '=', 'Roger Scott')]),
+                        msg="A partner named Roger Scott should exist in the demo data")
         self.env['ir.filters'].create({
             'name': 'Roger',
             'model_id': 'res.partner',
@@ -36,7 +37,8 @@ class TestDeadMansSwitchClient(TransactionCase):
             'is_dead_mans_switch_filter': True,
         })
 
-        # We shouldn't find Nimrod Soames from the demo data
+        self.assertFalse(self.env['res.partner'].search([('name', '=', 'Nimrod Soames')]),
+                         msg="A partner named Nimrod Soames should not exist in the demo data")
         self.env['ir.filters'].create({
             'name': 'Nimmy',
             'model_id': 'res.partner',

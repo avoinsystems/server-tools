@@ -67,18 +67,16 @@ class DeadMansSwitchClient(models.AbstractModel):
 
     @api.model
     def _filter_check(self):
-        filters = self.env['ir.filters']\
-            .search([('is_dead_mans_switch_filter', '=', True)])
+        filters = self.env['ir.filters'].search([
+            ('is_dead_mans_switch_filter', '=', True)])
         filters_with_recs = []
         for f in filters:
-            has_recs = bool(self.env[f.model_id].search(f._get_eval_domain(),
-                                                        limit=1))
-            if has_recs:
+            if self.env[f.model_id].search(f._get_eval_domain(), limit=1):
                 filters_with_recs.append(f.name)
 
         if filters_with_recs:
-            raise DMSFilterException(u"Dead Man's Switch filters {} yielded "
-                                     u"records.".format(filters_with_recs))
+            raise DMSFilterException("Dead Man's Switch filters {} yielded "
+                                     "records.".format(filters_with_recs))
         return True
 
     @api.model
