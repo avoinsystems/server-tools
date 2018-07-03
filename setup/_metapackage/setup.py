@@ -12,6 +12,8 @@ setuptools.setup(
         'odoo11-addon-auto_backup',
         'odoo11-addon-base_cron_exclusion',
         'odoo11-addon-base_exception',
+        'odoo11-addon-base_remote',
+        'odoo11-addon-base_search_fuzzy',
         'odoo11-addon-base_technical_user',
         'odoo11-addon-database_cleanup',
         'odoo11-addon-datetime_formatter',
