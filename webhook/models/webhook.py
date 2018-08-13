@@ -181,6 +181,7 @@ class Webhook(models.Model):
         if not event:
             raise exceptions.ValidationError(_(
                 'event is not defined'))
+        event = Webhook.slugify_webhook(event)
         method_event_name_base = \
             'run_' + self.name + \
             '_' + event
@@ -202,3 +203,8 @@ class Webhook(models.Model):
                     _logger.debug(
                         'Not implemented method "%s" yet', method_event_name)
         return True
+
+    def slugify_webhook(text):
+        text = text.lower()
+        text = text.replace(' ', '_')
+        return text
