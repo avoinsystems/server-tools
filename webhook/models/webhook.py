@@ -18,6 +18,7 @@ except ImportError as err:
 
 class WebhookAddress(models.Model):
     _name = 'webhook.address'
+    _description = 'Webhook Address'
 
     name = fields.Char(
         'IP or Network Address',
@@ -32,6 +33,7 @@ class WebhookAddress(models.Model):
 
 class Webhook(models.Model):
     _name = 'webhook'
+    _description = 'Webhook'
 
     name = fields.Char(
         'Consumer name',
