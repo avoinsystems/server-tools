@@ -8,8 +8,10 @@ setuptools.setup(
     description="Meta package for oca-server-tools Odoo addons",
     version=version,
     install_requires=[
+        'odoo13-addon-auditlog',
         'odoo13-addon-base_cron_exclusion',
         'odoo13-addon-base_jsonify',
+        'odoo13-addon-base_m2m_custom_field',
         'odoo13-addon-company_country',
         'odoo13-addon-onchange_helper',
     ],
