@@ -26,6 +26,7 @@ class DMSFilterException(except_orm):
 
 class DeadMansSwitchClient(models.AbstractModel):
     _name = "dead.mans.switch.client"
+    _description = "Dead Man's Switch Client"
     _register = True
 
     @api.model
