@@ -6,17 +6,22 @@ import ast
 
 from odoo.tests import common
 from odoo.modules import registry
-from odoo.addons.mass_editing.hooks import uninstall_hook
+from ..hooks import uninstall_hook
 
 
+@common.at_install(False)
+@common.post_install(True)
 class TestMassEditing(common.TransactionCase):
 
     def setUp(self):
         super(TestMassEditing, self).setUp()
         model_obj = self.env['ir.model']
         self.mass_wiz_obj = self.env['mass.editing.wizard']
-        self.mass_object_model = self.env['mass.object']
+        self.mass_editing_model = self.env['mass.editing']
         self.res_partner_model = self.env['res.partner']
+        self.ir_translation_model = self.env['ir.translation']
+        self.lang_model = self.env['res.lang']
+
         self.partner = self._create_partner()
         self.partner_model = model_obj.\
             search([('model', '=', 'res.partner')])
@@ -27,9 +32,8 @@ class TestMassEditing(common.TransactionCase):
                                     'country_id', 'customer', 'child_ids',
                                     'title'])])
         self.mass = self._create_mass_editing(self.partner_model,
-                                              self.fields_model)
-        self.copy_mass = self.mass.copy()
-        self.user = self._create_user()
+                                              self.fields_model,
+                                              'Partner')
 
     def _create_partner(self):
         """Create a Partner."""
@@ -39,6 +43,7 @@ class TestMassEditing(common.TransactionCase):
             'email': 'example@yourcompany.com',
             'phone': 123456,
             'category_id': [(6, 0, categ_ids)],
+            'notify_email': 'always'
         })
 
     def _create_user(self):
@@ -48,24 +53,34 @@ class TestMassEditing(common.TransactionCase):
             'email': 'test@test.com',
         })
 
-    def _create_mass_editing(self, model, fields):
+    def _create_mass_editing(self, model, fields, model_name):
         """Create a Mass Editing with Partner as model and
         email field of partner."""
-        mass = self.mass_object_model.create({
-            'name': 'Mass Editing for Partner',
+        mass = self.mass_editing_model.create({
+            'name': u'Mass Editing for {0}'.format(model_name),
             'model_id': model.id,
-            'field_ids': [(6, 0, fields.ids)]
+        })
+        line_ids = []
+        for field_id in fields.ids:
+            line = self.env['mass.editing.line'].create({
+                'model_id': model.id,
+                'mass_editing_id': mass.id,
+                'field_id': field_id
+            })
+            line_ids.append(line.id)
+        mass.write({
+            'line_ids': [(6, 0, line_ids)]
         })
         mass.create_action()
         return mass
 
-    def _apply_action(self, partner, vals):
+    def _apply_action(self, obj, vals):
         """Create Wizard object to perform mass editing to
         REMOVE field's value."""
         ctx = {
-            'active_id': partner.id,
-            'active_ids': partner.ids,
-            'active_model': 'res.partner',
+            'active_id': obj.id,
+            'active_ids': obj.ids,
+            'active_model': obj._name,
         }
         return self.mass_wiz_obj.with_context(ctx).create(vals)
 
@@ -83,7 +98,7 @@ class TestMassEditing(common.TransactionCase):
 
     def test_onchange_model(self):
         """Test whether onchange model_id returns model_id in list"""
-        new_mass = self.mass_object_model.new({'model_id': self.user_model.id})
+        new_mass = self.mass_editing_model.new({'model_id': self.user_model.id})
         new_mass._onchange_model_id()
         model_list = ast.literal_eval(new_mass.model_list)
         self.assertTrue(self.user_model.id in model_list,
@@ -132,13 +147,6 @@ class TestMassEditing(common.TransactionCase):
         res = wiz_action.action_apply()
         self.assertTrue(res['type'] == 'ir.actions.act_window_close',
                         'IR Action must be window close.')
-
-    def test_mass_edit_copy(self):
-        """Test if fields one2many field gets blank when mass editing record
-        is copied.
-        """
-        self.assertEqual(self.copy_mass.field_ids.ids, [],
-                         'Fields must be blank.')
 
     def test_sidebar_action(self):
         """Test if Sidebar Action is added / removed to / from give object."""

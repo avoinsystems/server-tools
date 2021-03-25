@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * mass_sorting
-# 
+#
 # Translators:
 # OCA Transbot <transbot@odoo-community.org>, 2017
 msgid ""
@@ -12,10 +12,10 @@ msgstr ""
 "PO-Revision-Date: 2017-12-01 02:10+0000\n"
 "Last-Translator: OCA Transbot <transbot@odoo-community.org>, 2017\n"
 "Language-Team: French (https://www.transifex.com/oca/teams/23907/fr/)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. module: mass_sorting
@@ -117,8 +117,8 @@ msgid ""
 "If checked, any user could have the possibility to change fields, and use "
 "others."
 msgstr ""
-"Si la case est cochée, chaque utilisateur aura la possibilité de changer les"
-" champs et d'en utiliser d'autres."
+"Si la case est cochée, chaque utilisateur aura la possibilité de changer les "
+"champs et d'en utiliser d'autres."
 
 #. module: mass_sorting
 #: model:ir.model.fields,field_description:mass_sorting.field_mass_sort_config_line_desc
@@ -225,8 +225,8 @@ msgstr "Critères de tri"
 msgid ""
 "The selected Field to Sort '%s' doesn't belong to the selected model '%s'."
 msgstr ""
-"Le champ sélectionné pour le tri '%s' n'appartient pas au modèle sélectionné"
-" '%s'."
+"Le champ sélectionné pour le tri '%s' n'appartient pas au modèle sélectionné "
+"'%s'."
 
 #. module: mass_sorting
 #: code:addons/mass_sorting/models/mass_sort_config.py:55

@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # * users_ldap_populate
-# 
+#
 # Translators:
 # OCA Transbot <transbot@odoo-community.org>, 2017
 msgid ""
@@ -12,10 +12,10 @@ msgstr ""
 "PO-Revision-Date: 2017-12-01 02:11+0000\n"
 "Last-Translator: OCA Transbot <transbot@odoo-community.org>, 2017\n"
 "Language-Team: Hungarian (https://www.transifex.com/oca/teams/23907/hu/)\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: users_ldap_populate
@@ -79,7 +79,7 @@ msgid "Name"
 msgstr "Név"
 
 #. module: users_ldap_populate
-#: code:addons/users_ldap_populate/models/users_ldap.py:67
+#: code:addons/users_ldap_populate/models/users_ldap.py:64
 #, python-format
 msgid ""
 "No login attribute found: Could not extract login attribute from filter %s"
@@ -113,6 +113,12 @@ msgstr ""
 #. module: users_ldap_populate
 #: model:ir.model,name:users_ldap_populate.model_res_company_ldap_populate_wizard
 msgid "Populate users from LDAP"
+msgstr ""
+
+#. module: users_ldap_populate
+#: code:addons/users_ldap_populate/models/users_ldap.py:91
+#, python-format
+msgid "Unable to process user with login %s"
 msgstr ""
 
 #. module: users_ldap_populate
