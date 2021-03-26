@@ -27,12 +27,13 @@ class IrModelData(models.Model):
                     continue
             if this.model not in self.env:
                 this.unlink()
-        return super(IrModelData, self)._module_data_uninstall(modules_to_remove)
+        return super()._module_data_uninstall(modules_to_remove)
 
 
 class CleanupPurgeLineModule(models.TransientModel):
     _inherit = "cleanup.purge.line"
     _name = "cleanup.purge.line.module"
+    _description = "Purge modules line"
 
     wizard_id = fields.Many2one(
         "cleanup.purge.wizard.module", "Purge Wizard", readonly=True
@@ -58,7 +59,10 @@ class CleanupPurgeLineModule(models.TransientModel):
             lambda x: x.state == "installed" and x.name != "base"
         ).button_immediate_uninstall()
         modules.refresh()
-        modules.unlink()
+        modules.filtered(
+            lambda x: x.state
+            not in ("installed", "to upgrade", "to remove", "to install")
+        ).unlink()
         return self.write({"purged": True})
 
 
@@ -70,6 +74,7 @@ class CleanupPurgeWizardModule(models.TransientModel):
     @api.model
     def find(self):
         res = []
+        purge_lines = self.env["cleanup.purge.line.module"]
         IrModule = self.env["ir.module.module"]
         for module in IrModule.search(
             [("to_buy", "=", False), ("name", "!=", "studio_customization")]
@@ -77,11 +82,13 @@ class CleanupPurgeWizardModule(models.TransientModel):
             if get_module_path(module.name, display_warning=False):
                 continue
             if module.state == "uninstalled":
-                self.env["cleanup.purge.line.module"].create(
+                purge_lines += self.env["cleanup.purge.line.module"].create(
                     {"name": module.name}
-                ).purge()
+                )
                 continue
             res.append((0, 0, {"name": module.name}))
+
+        purge_lines.purge()
 
         if not res:
             raise UserError(_("No modules found to purge"))

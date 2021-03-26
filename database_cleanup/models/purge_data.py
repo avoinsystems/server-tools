@@ -9,6 +9,7 @@ from ..identifier_adapter import IdentifierAdapter
 class CleanupPurgeLineData(models.TransientModel):
     _inherit = "cleanup.purge.line"
     _name = "cleanup.purge.line.data"
+    _description = "Purge Data Wizard Lines"
 
     data_id = fields.Many2one("ir.model.data", "Data entry")
     wizard_id = fields.Many2one(
@@ -25,13 +26,7 @@ class CleanupPurgeLineData(models.TransientModel):
             )
         to_unlink = objs.filtered(lambda x: not x.purged and x.data_id)
         self.logger.info("Purging data entries: %s", to_unlink.mapped("name"))
-        for ul in to_unlink:
-            try:
-                ul.mapped("data_id").unlink()
-            except KeyError:
-                pass
-            except AttributeError:
-                pass
+        to_unlink.mapped("data_id").unlink()
         return to_unlink.write({"purged": True})
 
 

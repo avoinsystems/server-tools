@@ -3,10 +3,10 @@
 # pylint: disable=consider-merging-classes-inherited
 from odoo import api, fields, models
 
-REASON_DUPLICATE = "1"
-REASON_DEFAULT = "2"
-REASON_DEFAULT_FALSE = "3"
-REASON_UNKNOWN_MODEL = "4"
+REASON_DUPLICATE = "REASON_DUPLICATE"
+REASON_DEFAULT = "REASON_DEFAULT"
+REASON_DEFAULT_FALSE = "REASON_DEFAULT_FALSE"
+REASON_UNKNOWN_MODEL = "REASON_UNKNOWN_MODEL"
 
 
 class CleanupPurgeLineProperty(models.TransientModel):

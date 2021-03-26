@@ -9,6 +9,7 @@ from ..identifier_adapter import IdentifierAdapter
 class CreateIndexesLine(models.TransientModel):
     _inherit = "cleanup.purge.line"
     _name = "cleanup.create_indexes.line"
+    _description = "Create Indexes Wizard Lines"
 
     purged = fields.Boolean("Created")
     wizard_id = fields.Many2one("cleanup.create_indexes.wizard")
@@ -28,8 +29,8 @@ class CreateIndexesLine(models.TransientModel):
                 ),
             )
             tables.add(model._table)
-        for _table in tables:
-            self.env.cr.execute("analyze %s", (IdentifierAdapter(model._table),))
+        for table in tables:
+            self.env.cr.execute("analyze %s", (IdentifierAdapter(table),))
         self.write({"purged": True})
 
 
@@ -61,7 +62,7 @@ class CreateIndexesWizard(models.TransientModel):
                 "join pg_class c on a.attrelid=c.oid "
                 "join pg_tables t on t.tablename=c.relname "
                 "where attname=%s and c.relname=%s",
-                (field.name, model._table),
+                (field.name, model._table,),
             )
             if not self.env.cr.rowcount:
                 continue

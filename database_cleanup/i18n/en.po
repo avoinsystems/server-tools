@@ -299,7 +299,7 @@ msgid "No dangling menu entries found"
 msgstr "No dangling menu entries found"
 
 #. module: database_cleanup
-#: code:addons/database_cleanup/models/purge_modules.py:92
+#: code:addons/database_cleanup/models/purge_modules.py:95
 #, python-format
 msgid "No modules found to purge"
 msgstr "No modules found to purge"
@@ -317,7 +317,7 @@ msgid "No orphaned data entries found"
 msgstr "No orphaned data entries found"
 
 #. module: database_cleanup
-#: code:addons/database_cleanup/models/purge_models.py:113
+#: code:addons/database_cleanup/models/purge_models.py:120
 #, python-format
 msgid "No orphaned models found"
 msgstr "No orphaned models found"
@@ -457,7 +457,7 @@ msgstr "Purge obsolete modules"
 #, fuzzy
 #| msgid "Purge obsolete models"
 msgid "Purge obsolete properties"
-msgstr "Purge obsolete models"
+msgstr "Purge obsolete properties"
 
 #. module: database_cleanup
 #: model:ir.ui.menu,name:database_cleanup.menu_purge_tables

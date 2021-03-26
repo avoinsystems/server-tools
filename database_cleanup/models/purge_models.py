@@ -71,14 +71,7 @@ class CleanupPurgeLineModel(models.TransientModel):
                     "UPDATE ir_attachment SET res_model = NULL " "WHERE id in %s",
                     (tuple(attachments.ids),),
                 )
-            try:
-                self.env["ir.model.constraint"].search(
-                    [("model", "=", line.name)]
-                ).unlink()
-            except KeyError:
-                continue
-            except AttributeError:
-                continue
+            self.env["ir.model.constraint"].search([("model", "=", line.name)]).unlink()
             cronjobs = (
                 self.env["ir.cron"]
                 .with_context(active_test=False)
