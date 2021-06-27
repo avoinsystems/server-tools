@@ -24,6 +24,7 @@ class DMSFilterException(except_orm):
 
 class DeadMansSwitchClient(models.AbstractModel):
     _name = 'dead.mans.switch.client'
+    _description = "Dead Man's Switch"
     _register = True
 
     @api.model
@@ -52,17 +53,12 @@ class DeadMansSwitchClient(models.AbstractModel):
                     cpu += process.cpu_percent()
                 else:  # pragma: no cover
                     cpu = None
-        user_count = 0
-        if 'bus.presence' in self.env.registry:
-            user_count = self.env['bus.presence'].search_count([
-                ('status', '=', 'online'),
-            ])
+
         return {
             'database_uuid': self.env['ir.config_parameter'].get_param(
                 'database.uuid'),
             'cpu': cpu,
             'ram': ram,
-            'user_count': user_count,
         }
 
     @api.model
