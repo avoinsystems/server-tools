@@ -7,8 +7,9 @@
 import html
 import time
 
-from odoo import _, api, fields, models, osv
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -41,6 +42,9 @@ class ExceptionRule(models.Model):
         "Python Code",
         help="Python code executed to check if the exception apply or "
         "not. Use failed = True to block the exception",
+    )
+    is_blocking = fields.Boolean(
+        string="Is blocking", help="When checked the exception can not be ignored",
     )
 
     @api.constrains("exception_type", "domain", "code")
@@ -112,7 +116,7 @@ class BaseExceptionMethod(models.AbstractModel):
         # Cumulate all the records to attach to the rule
         # before linking. We don't want to call "rule.write()"
         # which would:
-        # * write on write_date so lock the expection.rule
+        # * write on write_date so lock the exception.rule
         # * trigger the recomputation of "main_exception_id" on
         #   all the sale orders related to the rule, locking them all
         #   and preventing concurrent writes
@@ -138,7 +142,7 @@ class BaseExceptionMethod(models.AbstractModel):
             "object": rec,
             "obj": rec,
             # copy context to prevent side-effects of eval
-            # should be deprecated too, accesible through self.
+            # should be deprecated too, accessible through self.
             "context": self.env.context.copy(),
         }
 
@@ -152,7 +156,7 @@ class BaseExceptionMethod(models.AbstractModel):
             )  # nocopy allows to return 'result'
         except Exception as e:
             raise UserError(
-                _("Error when evaluating the exception.rule " "rule:\n %s \n(%s)")
+                _("Error when evaluating the exception.rule rule:\n %s \n(%s)")
                 % (rule.name, e)
             )
         return space.get("failed", False)
@@ -184,7 +188,7 @@ class BaseExceptionMethod(models.AbstractModel):
         """
         base_domain = self._get_base_domain()
         rule_domain = rule._get_domain()
-        domain = osv.expression.AND([base_domain, rule_domain])
+        domain = expression.AND([base_domain, rule_domain])
         return self.search(domain)
 
 
@@ -207,6 +211,13 @@ class BaseExceptionModel(models.AbstractModel):
     ignore_exception = fields.Boolean("Ignore Exceptions", copy=False)
 
     def action_ignore_exceptions(self):
+        if any(self.exception_ids.mapped("is_blocking")):
+            raise UserError(
+                _(
+                    "The exceptions can not be ignored, because "
+                    "some of them are blocking."
+                )
+            )
         self.write({"ignore_exception": True})
         return True
 
@@ -224,8 +235,17 @@ class BaseExceptionModel(models.AbstractModel):
             if rec.exception_ids and not rec.ignore_exception:
                 rec.exceptions_summary = "<ul>%s</ul>" % "".join(
                     [
-                        "<li>%s: <i>%s</i></li>"
-                        % tuple(map(html.escape, (e.name, e.description)))
+                        "<li>%s: <i>%s</i> <b>%s<b></li>"
+                        % tuple(
+                            map(
+                                html.escape,
+                                (
+                                    e.name,
+                                    e.description,
+                                    _("(Blocking exception)") if e.is_blocking else "",
+                                ),
+                            )
+                        )
                         for e in rec.exception_ids
                     ]
                 )
